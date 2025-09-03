@@ -62,7 +62,6 @@ func (jt *JTManager) GetPMIs(jtFileName string) (*model.Model, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if !slices.Contains(jtFilesList, jtFileName) {
-		log.Error("Can't find the JT file in the JT directory")
 		return nil, fmt.Errorf("%s: %s", op, "Can't find the JT file in the JT directory")
 	}
 	//convert
@@ -91,7 +90,7 @@ func (jt *JTManager) GetJTList() ([]string, error) {
 	log.Debug("searching JTs in folder", slog.String("dir", jt.jtStoragePath))
 	files, err := os.ReadDir(jt.jtStoragePath)
 	if err != nil {
-		log.Error("Error reading JT storage dir directory:", slog.String("error", err.Error()))
+		err = fmt.Errorf("%s: %w", "Error reading JT storage dir directory", err)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	resp := make([]string, 0, 10)
@@ -119,13 +118,11 @@ func (jt *JTManager) ConvertJTtoXML(jtFileName string) error {
 	//It overrides the file
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Error("failed to run the cmd", slog.String("error", err.Error()))
 		return fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("Cmd run without errors", slog.String("output", string(output)))
 
 	if _, err := os.Stat(xmlOutputFileFullPath); err != nil {
-		log.Error("error during file creation", slog.String("error", err.Error()))
 		return fmt.Errorf("%s: %w", op, err)
 	}
 	log.Info("XML file created", slog.String("xmlFilePath", string(xmlOutputFileFullPath)))
@@ -160,8 +157,7 @@ func (jt *JTManager) StorePMIsInDB(m *model.Model) (string, error) {
 
 	log.Debug("start StorePMIsInDB")
 	if m.JTFileName == "" {
-		log.Error("empty JTFileName detected")
-		return "", fmt.Errorf("%s: %s", "can't get key from Model to store in DB ", op)
+		return "", fmt.Errorf("%s: %s", "empty JTFileName detected", op)
 	}
 	err := jt.strg.SavePMIs(m.JTFileName, m)
 	if err != nil {
@@ -178,7 +174,6 @@ func (jt *JTManager) GetPMIsList() ([]string, error) {
 	log.Debug("start GetPMIsList")
 	pmis, err := jt.strg.GetKeysList()
 	if err != nil {
-		log.Error("can't get list of PMIs", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	log.Info("found JT files: ", slog.Int("total", len(pmis)))

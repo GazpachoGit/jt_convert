@@ -56,7 +56,6 @@ func (s *Storage) SavePMIs(key string, m *model.Model) error {
 		return bucket.Put([]byte(key), data)
 	})
 	if err != nil {
-		log.Error("error during bbolt SavePMIs transaction", slog.String("err", err.Error()))
 		return fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("successfully complete SavePMIs!")
@@ -84,7 +83,6 @@ func (s *Storage) GetPMIs(keys []string) ([]*model.Model, error) {
 		return nil
 	})
 	if err != nil {
-		log.Error("error during bbolt GetPMIs transaction", slog.String("err", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("got some data from bbolt db")
@@ -124,7 +122,6 @@ func (s *Storage) GetKeysList() ([]string, error) {
 		return nil
 	})
 	if err != nil {
-		log.Error("error during bbolt GetKeysList transaction", slog.String("err", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("successfully complete GetKeysList!")

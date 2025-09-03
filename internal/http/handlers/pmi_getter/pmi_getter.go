@@ -41,7 +41,7 @@ func New(log *slog.Logger, getterPMI PMIGetter) http.HandlerFunc {
 
 		model, err := getterPMI.GetPMIs(req.JtFileName)
 		if err != nil {
-			log.Error("failed to get PMIs")
+			log.Error("error during GetPMIs", slog.String("err", err.Error()))
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, response.Error(err.Error()))
 			return

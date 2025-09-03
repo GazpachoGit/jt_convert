@@ -19,7 +19,7 @@ func New(log *slog.Logger, getterJT JTGetter) http.HandlerFunc {
 
 		list, err := getterJT.GetJTList()
 		if err != nil {
-			log.Error("failed to get JT list")
+			log.Error("failed to get JT list", slog.String("err", err.Error()))
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, response.Error(err.Error()))
 			return
