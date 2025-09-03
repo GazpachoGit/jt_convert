@@ -78,13 +78,13 @@ func (s *Storage) GetPMIs(keys []string) ([]*model.Model, error) {
 			if val != nil {
 				data = append(data, val)
 			} else {
-				log.Debug("object not found", slog.String("key", key))
+				log.Info("object not found in db", slog.String("key", key))
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		log.Debug("error during bbolt GetPMIs transaction", slog.String("err", err.Error()))
+		log.Error("error during bbolt GetPMIs transaction", slog.String("err", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("got some data from bbolt db")
@@ -101,6 +101,7 @@ func (s *Storage) GetPMIs(keys []string) ([]*model.Model, error) {
 			resp = append(resp, &m)
 		}
 	}
+	log.Debug("successfully complete GetPMIs!")
 	return resp, nil
 }
 
@@ -123,9 +124,10 @@ func (s *Storage) GetKeysList() ([]string, error) {
 		return nil
 	})
 	if err != nil {
-		log.Debug("error during bbolt GetKeysList transaction", slog.String("err", err.Error()))
+		log.Error("error during bbolt GetKeysList transaction", slog.String("err", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+	log.Debug("successfully complete GetKeysList!")
 	return keys, nil
 }
 

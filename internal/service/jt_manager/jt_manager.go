@@ -29,7 +29,7 @@ type JTManager struct {
 }
 
 func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, strg Storage, log *slog.Logger) *JTManager {
-	log.Info("create JT manager instance",
+	log.Debug("create JT manager instance",
 		slog.String("visualizerPath", visualizerPath),
 		slog.String("jtStoragePath", jtStoragePath),
 		slog.String("xmlStoragePath", xmlStoragePath),
@@ -49,43 +49,38 @@ func (jt *JTManager) GetPMIs(jtFileName string) (*model.Model, error) {
 	//check db
 	models, err := jt.strg.GetPMIs([]string{jtFileName})
 	if err != nil {
-		log.Error("Error during GetPMIs storage request", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if len(models) > 0 && models[0] != nil {
 		log.Info("Model found in DB!")
 		return models[0], nil
 	}
-	log.Info("Model not found in DB. Generating new from the JT...")
+	log.Debug("Model not found in DB. Generating new from the JT...")
 	//check jt file
 	jtFilesList, err := jt.GetJTList()
 	if err != nil {
-		log.Error("Can't get the list of JT files", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	if !slices.Contains(jtFilesList, jtFileName) {
-		log.Info("Can't find the JT file in the JT directory")
+		log.Error("Can't find the JT file in the JT directory")
 		return nil, fmt.Errorf("%s: %s", op, "Can't find the JT file in the JT directory")
 	}
 	//convert
 	err = jt.ConvertJTtoXML(jtFileName)
 	if err != nil {
-		log.Error("Can't convert JT to XML", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	//parse pmis
 	model, err := jt.ParsePMIsFromXML(jtFileName)
 	if err != nil {
-		log.Error("Can't parse PMIs from XML", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	//store pmis
 	_, err = jt.StorePMIsInDB(model)
 	if err != nil {
-		log.Error("Can't write pmis into DB", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-	log.Info("Successfully procesed GetPMIs request!")
+	log.Debug("Successfully procesed GetPMIs request!")
 	return model, nil
 }
 
@@ -93,11 +88,10 @@ func (jt *JTManager) GetJTList() ([]string, error) {
 	const op = "service.jtconverter.GetJTList"
 	log := jt.log.With(slog.String("op", op))
 
-	log.Info("searching JTs in folder", slog.String("dir", jt.jtStoragePath))
+	log.Debug("searching JTs in folder", slog.String("dir", jt.jtStoragePath))
 	files, err := os.ReadDir(jt.jtStoragePath)
 	if err != nil {
 		log.Error("Error reading JT storage dir directory:", slog.String("error", err.Error()))
-		fmt.Println("Error reading directory:", err)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	resp := make([]string, 0, 10)
@@ -120,7 +114,7 @@ func (jt *JTManager) ConvertJTtoXML(jtFileName string) error {
 
 	cmd := exec.Command(jt.visualizerPath, jtFileFullPath, "-pmi", jtFileFullPath, "-output", xmlOutputFileFullPath)
 
-	log.Info("Executing command", slog.String("cmd", cmd.String()))
+	log.Debug("Executing command", slog.String("cmd", cmd.String()))
 
 	//It overrides the file
 	output, err := cmd.CombinedOutput()
@@ -128,13 +122,14 @@ func (jt *JTManager) ConvertJTtoXML(jtFileName string) error {
 		log.Error("failed to run the cmd", slog.String("error", err.Error()))
 		return fmt.Errorf("%s: %w", op, err)
 	}
-	log.Info("Cmd run without errors", slog.String("output", string(output)))
+	log.Debug("Cmd run without errors", slog.String("output", string(output)))
 
-	if _, err := os.Stat(xmlOutputFileFullPath); err == nil {
-		log.Info("XML file created", slog.String("xmlFilePath", string(xmlOutputFileFullPath)))
-		return nil
+	if _, err := os.Stat(xmlOutputFileFullPath); err != nil {
+		log.Error("error during file creation", slog.String("error", err.Error()))
+		return fmt.Errorf("%s: %w", op, err)
 	}
-	return fmt.Errorf("%s: %w", op, err)
+	log.Info("XML file created", slog.String("xmlFilePath", string(xmlOutputFileFullPath)))
+	return nil
 }
 
 func (jt *JTManager) ParsePMIsFromXML(jtFileName string) (*model.Model, error) {
@@ -165,11 +160,11 @@ func (jt *JTManager) StorePMIsInDB(m *model.Model) (string, error) {
 
 	log.Debug("start StorePMIsInDB")
 	if m.JTFileName == "" {
+		log.Error("empty JTFileName detected")
 		return "", fmt.Errorf("%s: %s", "can't get key from Model to store in DB ", op)
 	}
 	err := jt.strg.SavePMIs(m.JTFileName, m)
 	if err != nil {
-		log.Error("can't save the Model in db", slog.String("error", err.Error()))
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("successfully finish StorePMIsInDB")
@@ -179,6 +174,8 @@ func (jt *JTManager) StorePMIsInDB(m *model.Model) (string, error) {
 func (jt *JTManager) GetPMIsList() ([]string, error) {
 	const op = "service.jtconverter.GetPMIsList"
 	log := jt.log.With(slog.String("op", op))
+
+	log.Debug("start GetPMIsList")
 	pmis, err := jt.strg.GetKeysList()
 	if err != nil {
 		log.Error("can't get list of PMIs", slog.String("error", err.Error()))

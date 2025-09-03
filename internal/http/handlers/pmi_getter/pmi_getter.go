@@ -30,13 +30,14 @@ func New(log *slog.Logger, getterPMI PMIGetter) http.HandlerFunc {
 			render.JSON(w, r, response.Error("can't decode request body"))
 			return
 		}
-		log.Info("request body decoded", slog.Any("request", req))
+
 		if req.JtFileName == "" {
 			log.Error("empty JT file name")
 			render.Status(r, http.StatusBadRequest)
 			render.JSON(w, r, response.Error("empty JT file name"))
 			return
 		}
+		log.Info("request body decoded", slog.Any("request", req))
 
 		model, err := getterPMI.GetPMIs(req.JtFileName)
 		if err != nil {
