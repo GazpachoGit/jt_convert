@@ -1,0 +1,44 @@
+{
+    "schemaVersion": "1.0.0",
+    "props": {
+        "pmi-state": {
+            "type": "object"
+        }
+    },
+    "data":{
+        "name": {
+            "displayName": "Name",
+            "type": "STRING",
+            "dbValue": ""
+        },
+        "value":{
+            "displayName": "Value",
+            "type": "STRING",
+            "dbValue": ""
+        }
+    },
+    "actions":{
+        "handlePMIChange": {
+            "actionType": "JSFunction",
+            "method": "updatePMIInfoView",
+            "inputData": {
+                "pmiState": "{{props.pmiState}}"
+            },
+            "outputData": {
+                "name.uiValue":"name",
+                "value.uiValue":"value"
+            },
+            "deps": "js/egorPmiPanelService"
+        }
+    },
+    "lifecycleHooks": {
+        "onUpdate": [
+            {
+                "action": "handlePMIChange",
+                "observers": [
+                    "props.pmiState"
+                ]
+            }
+        ]
+    }
+}

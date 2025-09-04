@@ -1,0 +1,104 @@
+{
+    "schemaVersion": "1.0.0",
+    "props": {
+        "model-state": {
+            "type": "object"
+        },
+        "pmi-state":{
+            "type": "object"
+        }
+    },
+    "data": {
+        "selectionData": {
+            "initialValues": {},
+            "meta": {}
+        }
+    },
+    "grids": {
+        "tableGrid": {
+            "dataProvider": "performSearch",
+            "columnProvider": "tableColumnProvider",
+            "addIconColumn": false,
+            "gridOptions": {
+                "enableGridMenu": false,
+                "enablePinning": false,
+                "enableSorting": false
+            }
+        }
+    },
+    "dataProviders": {
+        "performSearch": {
+            "action": "search",
+            "response": "{{data.searchResults}}",
+            "totalFound": "{{data.totalFound}}",
+            "inputData": {
+                "selectionData": "{{fields.selectionData}}"
+            },
+            "selectionModelMode": "single"
+        }
+    },
+    "actions": {
+        "loadPMIs": {
+            "actionType": "dataProvider",
+            "method": "performSearch"
+        },
+        "search": {
+            "actionType": "JSFunction",
+            "deps": "js/egorPmiPanelService",
+            "method": "getPMIs",
+            "inputData": {
+                "selectedJT":"{{props.modelState}}"
+            },
+            "outputData": {
+                "totalFound": "totalFound",
+                "searchResults": "searchResults"
+            }
+        },
+        "handlePMIChange": {
+            "actionType": "JSFunction",
+            "method": "updateParentState",
+            "inputData": {
+                "selectionData":"{{data.selectionData.selected[0]}}",
+                "parentState": "{{props.pmiState}}"
+            },
+            "outputData": {
+            },
+            "deps": "js/egorPmiPanelService"
+        }
+    },
+    "columnProviders": {
+        "tableColumnProvider": {
+            "columns": [
+                {
+                    "name": "name",
+                    "displayName": "Name",
+                    "minWidth": 150,
+                    "width": 150
+                },
+                {
+                    "name": "value",
+                    "displayName": "Value",
+                    "minWidth": 150,
+                    "width": 150
+                }
+            ],
+            "frozenColumnIndex": -1
+        }
+    },
+    "lifecycleHooks": {
+        "onUpdate": [
+            {
+                "action": "handlePMIChange",
+                "observers": [
+                    "viewModel.atomicData.selectionData"
+                ]
+            },
+            {
+                "action": "loadPMIs",
+                "observers": [
+                    "props.modelState"
+                ]
+            }
+        ]
+    }
+}

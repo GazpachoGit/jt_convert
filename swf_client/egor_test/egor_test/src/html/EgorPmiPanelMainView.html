@@ -1,0 +1,19 @@
+<aw-command-panel caption="PMI">   
+    <aw-panel-body>
+        <aw-flex-row height="28f">
+            <aw-flex-column width="4">
+                <aw-label prop="data.selectedModelName"></aw-label>
+                <aw-label prop="data.selectedPMIName"></aw-label>
+                <egor-pmi-panel-jt-list model-state="data.modelState"></egor-pmi-panel-jt-list>
+            </aw-flex-column>
+            <aw-flex-column width="8">
+                <aw-flex-row height="6">
+                    <egor-pmi-panel-pmi-list model-state="data.modelState" pmi-state="data.pmiState"></egor-pmi-panel-pmi-list>
+                </aw-flex-row>
+                <aw-flex-row height="6">
+                    <egor-pmi-panel-pmi-info pmi-state="data.pmiState"></egor-pmi-panel-pmi-info>
+                </aw-flex-row>
+            </aw-flex-column>
+        <aw-flex-row>
+    </aw-panel-body>
+</aw-command-panel> 

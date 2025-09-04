@@ -1,0 +1,45 @@
+{
+    "commands": {
+        "egor_open_pmi_panel": {
+            "iconId": "cmdAddDefect",
+            "title": "Open PMI"
+        }
+    },
+    "commandHandlers": {
+        "egor_open_pmi_panelHandler": {
+            "id": "egor_open_pmi_panel",
+            "activeWhen": {
+                "condition": "conditions.true"
+            },
+            "visibleWhen": {
+                "condition": "conditions.true"
+            },
+            "action": "activateegor_open_pmi_panel"
+        }
+    },
+    "commandPlacements": {
+        "egor_open_pmi_panelPlacement": {
+            "id": "egor_open_pmi_panel",
+            "priority": 10,
+            "uiAnchor": "aw_workarea_toolbar"
+        }
+    },
+    "actions": {
+        "activateegor_open_pmi_panel": {
+            "actionType": "dialog",
+            "inputData": {
+                "options": {
+                    "view": "EgorPmiPanelMain",
+                    "parent": ".aw-layout-workareaMain",
+                    "placement": "right",
+                    "width": "MEDIUM",
+                    "height": "FULL"
+                }
+            }
+        }
+    },
+    "conditions": {},
+    "onEvent": [],
+    "messages": {},
+    "i18n": {}
+}

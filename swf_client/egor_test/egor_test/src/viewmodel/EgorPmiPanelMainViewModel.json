@@ -1,0 +1,65 @@
+{
+    "schemaVersion": "1.0.0",
+    "data": {
+        "modelState": {
+            "initialValues": {
+            },
+            "meta": {}
+        },
+        "pmiState": {
+            "initialValues": {
+            },
+            "meta": {}
+        },
+        "selectedModelName": {
+            "displayName": "Selected Model",
+            "type": "STRING",
+            "dbValue": ""
+        },
+        "selectedPMIName":{
+            "displayName": "Selected PMI",
+            "type": "STRING",
+            "dbValue": ""
+        }
+    },
+    "actions": {
+        "handleModelChange": {
+            "actionType": "JSFunction",
+            "method": "handleModelChangeFromMain",
+            "inputData": {
+                "selectedObjects": "{{data.modelState}}"
+            },
+            "outputData": {
+                "selectedModelName.uiValue":""
+            },
+            "deps": "js/egorPmiPanelService"
+        },
+        "handlePMIChange": {
+            "actionType": "JSFunction",
+            "method": "handlePMIChangeFromMain",
+            "inputData": {
+                "selectedObjects": "{{data.pmiState}}"
+            },
+            "outputData": {
+                "selectedPMIName.uiValue":""
+            },
+            "deps": "js/egorPmiPanelService"
+        }
+    },
+    "lifecycleHooks": {
+        "onUpdate": [
+            {
+                "action": "handleModelChange",
+                "observers": [
+                    "viewModel.atomicData.modelState"
+                ]
+            },
+            {
+                "action": "handlePMIChange",
+                "observers": [
+                    "viewModel.atomicData.pmiState"
+                ]
+            }
+        ]
+    }
+}

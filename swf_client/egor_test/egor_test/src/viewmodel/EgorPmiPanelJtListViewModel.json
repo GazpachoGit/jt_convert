@@ -1,0 +1,65 @@
+{
+    "schemaVersion": "1.0.0",
+    "props": {
+        "model-state": {
+            "type": "object"
+        }
+    },
+    "data": {
+        "selectionData": {
+            "initialValues": {},
+            "meta": {}
+        }
+    },
+    "dataProviders": {
+        "performSearch": {
+            "action": "search",
+            "response": "{{data.searchResults}}",
+            "totalFound": "{{data.totalFound}}",
+            "inputData": {
+                "selectionData": "{{fields.selectionData}}"
+            },
+            "selectionModelMode": "single"
+        }
+    },
+    "actions": {
+        "loadJT": {
+            "actionType": "dataProvider",
+            "method": "performSearch"
+        },
+        "search": {
+            "actionType": "JSFunctionAsync",
+            "deps": "js/egorPmiPanelService",
+            "method": "getJTList",
+            "inputData": {},
+            "outputData": {
+                "totalFound": "totalFound",
+                "searchResults": "searchResults"
+            }
+        },
+        "handleModelChange": {
+            "actionType": "JSFunction",
+            "method": "updateParentState",
+            "inputData": {
+                "selectionData":"{{data.selectionData.selected[0]}}",
+                "parentState": "{{props.modelState}}"
+            },
+            "outputData": {
+            },
+            "deps": "js/egorPmiPanelService"
+        }
+    },
+    "lifecycleHooks": {
+        "onMount": {
+            "action": "loadJT"
+        },
+        "onUpdate": [
+            {
+                "action": "handleModelChange",
+                "observers": [
+                    "viewModel.atomicData.selectionData"
+                ]
+            }
+        ]
+    }
+}
