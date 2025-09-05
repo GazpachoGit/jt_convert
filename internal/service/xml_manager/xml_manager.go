@@ -50,6 +50,7 @@ func (x *XMLManager) ParsePMIsFromXML(xmlFileFullPath string) ([]model.PMI, erro
 					log.Debug("err during interactive decoding", slog.String("err", err.Error()))
 					continue
 				}
+				label.BuildAttributes()
 				log.Debug("Label detected", slog.String("labelName", label.Name))
 				pmis = append(pmis, label)
 			}

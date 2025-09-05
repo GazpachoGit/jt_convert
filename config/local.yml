@@ -1,6 +1,6 @@
 http_server:
   address: localhost:9000
-  timeout: 15s
+  timeout: 20s
   idle_timeout: 60s
 jt: 
   visualizer_path: 'C:\Program Files\Siemens\Teamcenter2412\Visualization\Program'
