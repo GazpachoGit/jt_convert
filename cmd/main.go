@@ -7,6 +7,7 @@ import (
 	pmi_getter "jt_converter/internal/http/handlers/pmi_getter"
 	pmi_list_getter "jt_converter/internal/http/handlers/pmi_list_getter"
 	jtmng "jt_converter/internal/service/jt_manager"
+	xml "jt_converter/internal/service/xml_manager"
 	"jt_converter/internal/storage/bbolt"
 	"log/slog"
 	"net/http"
@@ -25,11 +26,14 @@ func main() {
 	storage := bbolt.New(cfg.JT.DBPath, log)
 	defer storage.Close()
 
+	xmlMngr := xml.NewXMLManager(log)
+
 	jt_manager := jtmng.New(
 		cfg.JT.VisualizerPath,
 		cfg.JT.JtStoragePath,
 		cfg.JT.XmlStoragePath,
 		storage,
+		xmlMngr,
 		log,
 	)
 

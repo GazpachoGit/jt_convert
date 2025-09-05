@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"slices"
 	"strings"
-	"time"
 )
 
 const JTFormat = ".jt"
@@ -20,15 +19,20 @@ type Storage interface {
 	GetKeysList() ([]string, error)
 }
 
+type XMLManager interface {
+	ParsePMIsFromXML(xmlFileFullPath string) ([]model.PMI, error)
+}
+
 type JTManager struct {
 	visualizerPath string
 	xmlStoragePath string
 	jtStoragePath  string
 	log            *slog.Logger
 	strg           Storage
+	x              XMLManager
 }
 
-func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, strg Storage, log *slog.Logger) *JTManager {
+func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, strg Storage, x XMLManager, log *slog.Logger) *JTManager {
 	log.Debug("create JT manager instance",
 		slog.String("visualizerPath", visualizerPath),
 		slog.String("jtStoragePath", jtStoragePath),
@@ -40,6 +44,7 @@ func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, str
 		jtStoragePath:  jtStoragePath,
 		log:            log,
 		strg:           strg,
+		x:              x,
 	}
 }
 
@@ -111,7 +116,7 @@ func (jt *JTManager) ConvertJTtoXML(jtFileName string) error {
 	jtFileFullPath := jt.jtStoragePath + "\\" + jtFileName + JTFormat
 	xmlOutputFileFullPath := jt.xmlStoragePath + "\\" + jtFileName + XMLFormat
 
-	cmd := exec.Command(jt.visualizerPath, jtFileFullPath, "-pmi", jtFileFullPath, "-output", xmlOutputFileFullPath)
+	cmd := exec.Command(jt.visualizerPath, jtFileFullPath, "-pmi", "-output", xmlOutputFileFullPath)
 
 	log.Debug("Executing command", slog.String("cmd", cmd.String()))
 
@@ -133,22 +138,14 @@ func (jt *JTManager) ParsePMIsFromXML(jtFileName string) (*model.Model, error) {
 	const op = "service.jtconverter.ParsePMIsFromXML"
 	log := jt.log.With(slog.String("op", op), slog.String("jtFileName", jtFileName))
 	log.Debug("start parse PMIs in the XML")
-	//xmlOutputFileFullPath := jt.xmlStoragePath + "\\" + jtFileName + ".xml"
-	return &model.Model{
-		CreationDate: time.Now(),
-		JTFileName:   jtFileName,
-		PMIs: []model.PMI{
-			{
-				Label: "Diameter_1",
-				Type:  "Dimension",
-				Attributes: map[string]string{
-					"value": "20",
-					"upper": "0.05",
-					"lower": "0.02",
-				},
-			},
-		},
-	}, nil
+	xmlOutputFileFullPath := jt.xmlStoragePath + "\\" + jtFileName + ".xml"
+	pmis, err := jt.x.ParsePMIsFromXML(xmlOutputFileFullPath)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	model := model.NewModel(jtFileName, pmis)
+	log.Debug("successfully retrieved PMIs")
+	return model, nil
 }
 
 func (jt *JTManager) StorePMIsInDB(m *model.Model) (string, error) {
