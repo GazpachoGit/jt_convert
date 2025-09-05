@@ -43,7 +43,7 @@
             "method": "performSearch"
         },
         "search": {
-            "actionType": "JSFunction",
+            "actionType": "JSFunctionAsync",
             "deps": "js/egorPmiPanelService",
             "method": "getPMIs",
             "inputData": {
@@ -80,7 +80,21 @@
                     "displayName": "Value",
                     "minWidth": 150,
                     "width": 150
+                },
+                {
+                    "name": "upperDelta",
+                    "displayName": "Upper Delta",
+                    "minWidth": 150,
+                    "width": 150
+                },
+                {
+                    "name": "lowerDelta",
+                    "displayName": "Lower Delta",
+                    "minWidth": 150,
+                    "width": 150
                 }
+                
+                
             ],
             "frozenColumnIndex": -1
         }

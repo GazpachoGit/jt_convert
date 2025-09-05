@@ -16,9 +16,10 @@ type PMI struct {
 }
 
 type AWCProperty struct {
-	Type    string `json:"type"`
-	UiValue string `json:"uiValue"`
-	Value   string `json:"value"`
+	Type         string `json:"type"`
+	UiValue      string `json:"uiValue"`
+	Value        string `json:"value"`
+	PropertyName string `json:"propertyName"`
 }
 
 type Attributes struct {
@@ -57,9 +58,10 @@ func (p *PMI) BuildAttributes() {
 	}
 	for _, propInstance := range p.RawProps.PropertyList {
 		p.Props[propInstance.Key] = AWCProperty{
-			Type:    "STRING",
-			UiValue: propInstance.Value,
-			Value:   propInstance.Value,
+			Type:         "STRING",
+			UiValue:      propInstance.Value,
+			Value:        propInstance.Value,
+			PropertyName: propInstance.Key,
 		}
 	}
 	if pmiType, ok := p.Props["NX_PMI_TYPE"]; ok && pmiType.Value == "22" {

@@ -5,18 +5,6 @@
             "type": "object"
         }
     },
-    "data":{
-        "name": {
-            "displayName": "Name",
-            "type": "STRING",
-            "dbValue": ""
-        },
-        "value":{
-            "displayName": "Value",
-            "type": "STRING",
-            "dbValue": ""
-        }
-    },
     "actions":{
         "handlePMIChange": {
             "actionType": "JSFunction",
@@ -25,8 +13,7 @@
                 "pmiState": "{{props.pmiState}}"
             },
             "outputData": {
-                "name.uiValue":"name",
-                "value.uiValue":"value"
+                "resp":"resp"
             },
             "deps": "js/egorPmiPanelService"
         }

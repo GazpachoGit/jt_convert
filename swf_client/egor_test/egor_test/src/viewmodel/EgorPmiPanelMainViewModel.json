@@ -44,6 +44,11 @@
                 "selectedPMIName.uiValue":""
             },
             "deps": "js/egorPmiPanelService"
+        },
+        "getPMIServiceState":{
+            "actionType": "JSFunctionAsync",
+            "method": "getPMIServiceState",
+            "deps": "js/egorPmiPanelService"
         }
     },
     "lifecycleHooks": {
@@ -60,6 +65,9 @@
                     "viewModel.atomicData.pmiState"
                 ]
             }
-        ]
+        ],
+        "onMount":{
+            "action": "getPMIServiceState"
+        }
     }
 }

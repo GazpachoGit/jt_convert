@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/go-chi/cors v1.2.2
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	go.etcd.io/bbolt v1.4.3 // indirect
 	golang.org/x/sys v0.29.0 // indirect

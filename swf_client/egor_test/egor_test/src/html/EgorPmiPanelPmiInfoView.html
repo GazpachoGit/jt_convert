@@ -1,6 +1,12 @@
-<aw-panel-section caption='PMI Info'>
-    <aw-panel-body visible-when="props.pmiState">
-        <aw-label prop="data.name"></aw-label>
-        <aw-label prop="data.value"></aw-label>
-    </aw-panel-body>
+<aw-panel-section caption='PMI Properties' visible-when="data.resp.length">
+    <aw-flex-row height="13f">
+        <aw-flex-column width="12">
+            <aw-scrollpanel>
+                <p aw-repeat="res : data.resp">
+                    <span class="sw-property-name" style="padding-right: 10px;">{{res.propertyName}}</span>
+                    <span>{{res.uiValue}}</span>
+                </p>
+            </aw-scrollpanel>
+        </aw-flex-column>
+    </aw-flex-row>
 </aw-panel-section>
