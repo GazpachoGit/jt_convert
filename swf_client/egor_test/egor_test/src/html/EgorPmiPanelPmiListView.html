@@ -1,13 +1,7 @@
-<!-- <div class="aw-xrt-objectSetContent aw-layout-flexColumn aw-qualityFmea-swaTable">
-    <aw-panel-section caption='PMIs'>
-        <aw-scrollpanel>
-            
-        </aw-scrollpanel>
-    </aw-panel-section>
-</div> -->
 <aw-panel-section caption='PMIs'>
     <aw-panel>
-        <aw-flex-row height="13f" justify="bottom">
+        <span  visible-when="!data.totalFound">No data</span>
+        <aw-flex-row height="13f" justify="bottom" visible-when="data.totalFound">
             <aw-splm-table gridid="tableGrid"></aw-splm-table>
         </aw-flex-row>
     </aw-panel>

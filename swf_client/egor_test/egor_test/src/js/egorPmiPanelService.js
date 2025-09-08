@@ -3,9 +3,33 @@ import soaSvc from 'soa/kernel/soaService';
 import messagingService from 'js/messagingService';
 import dms from 'soa/dataManagementService';
 import cdm from 'soa/kernel/clientDataModel';
+import fms from 'soa/fileManagementService';
 
 const RELATION_NAME = "Qam0QualityActionAttachment"
 const GO_APP_URL = 'http://localhost:9000'
+
+export async function loadJTWithPMIs(dataset){
+    try {
+        if(!dataset.props.ref_list){
+            await getObjects([dataset.uid], ['ref_list'])
+        }
+        if(!dataset.props.ref_list) throw new Error('The object is not Dataset type')
+        const namedref_uids = dataset.props.ref_list.dbValues
+        if(!namedref_uids.length) throw new Error('There are no files inside the Dataset')
+        const namedrefs = await getObjects(namedref_uids)
+        
+        const data = await doRequest('POST', "/v1/jts/loadJT",{
+            uid: namedrefs[0].uid,
+            type:namedrefs[0].type,
+            name: dataset.uid
+        })
+        messagingService.showInfo("successfully loaded JT from TC and retrieved PMIs")
+        await getPMIServiceState()
+    } catch (err){
+        messagingService.showError(err.message)
+        throw err
+    }
+}
 
 export async function getJTList() {
     const selection = appCtxService.ctx.xrtSummaryContextObject
@@ -19,12 +43,17 @@ export async function getJTList() {
 }
 
 export async function getPMIServiceState(){
-    const loadedJTs = await doRequest('GET','/v1/jts')
-    const loadedPMIs = await doRequest('GET','/v1/pmis')
-    appCtxService.updateCtx( 'egorPmiCtx', {
-        loadedJTs:loadedJTs,
-        loadedPMIs:loadedPMIs
-    } );
+    try {
+        const loadedJTs = await doRequest('GET','/v1/jts')
+        const loadedPMIs = await doRequest('GET','/v1/pmis')
+        appCtxService.updateCtx( 'egorPmiCtx', {
+            loadedJTs: loadedJTs.jts,
+            loadedPMIs: loadedPMIs.pmis
+        } );
+    } catch (err) {
+        messagingService.showError(err.message);
+        throw err
+    }
 }
 
 async function doRequest(method, url ,body){
@@ -33,7 +62,7 @@ async function doRequest(method, url ,body){
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: body ? JSON.stringify(body) : {}
+            body: body ? JSON.stringify(body) : null
         })
         if (!resp.ok) throw Error("Network issue")
         const data = await resp.json()
@@ -47,6 +76,13 @@ export async function getPMIs(modelState) {
             searchResults: []
         }
         const uid = modelState.uid
+        if(appCtxService.ctx.egorPmiCtx.loadedJTs.indexOf(uid) === -1 || appCtxService.ctx.egorPmiCtx.loadedPMIs.indexOf(uid) === -1) {
+            return {
+            totalFound: 0,
+            searchResults: []
+        }
+        }
+
         const data = await doRequest('POST', "/v1/jts/getPMIs",{jt_file_name: uid})
         return {
             totalFound: data.PMIs.length,
@@ -72,12 +108,12 @@ export function updateParentState(selectionData, parentContext) {
 }
 
 export function handleModelChangeFromMain(state) {
-    if (state) return state.Title
+    if (state && state.uid) return state.uid
     return ""
 }
 
 export function handlePMIChangeFromMain(state) {
-    if (state) return state.props.name.value
+    if (state && state.props) return state.props.name.value
     return ""
 }
 
@@ -105,6 +141,7 @@ async function getObjects(uids, props) {
     }
     return resp
 }
+
 
     // return{
     //     totalFound:2,

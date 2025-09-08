@@ -7,3 +7,7 @@ jt:
   xml_storage_path: 'C:\pmi\xml'
   js_storage_path: 'C:\pmi\jt'
   db_path: 'C:\pmi\db'
+tc:
+  tc_url: "http://localhost:3000"
+  user: etorn186c
+  password: egor

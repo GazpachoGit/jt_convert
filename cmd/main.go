@@ -1,12 +1,15 @@
 package main
 
 import (
+	tcclient "jt_converter/internal/clients/tc_client"
 	"jt_converter/internal/config"
 	jt_list_getter "jt_converter/internal/http/handlers/jt_list_getter"
+	loadfile "jt_converter/internal/http/handlers/load_file"
 	ping "jt_converter/internal/http/handlers/ping"
 	pmi_getter "jt_converter/internal/http/handlers/pmi_getter"
 	pmi_list_getter "jt_converter/internal/http/handlers/pmi_list_getter"
 	jtmng "jt_converter/internal/service/jt_manager"
+	tc "jt_converter/internal/service/tc_service"
 	xml "jt_converter/internal/service/xml_manager"
 	"jt_converter/internal/storage/bbolt"
 	"log/slog"
@@ -29,12 +32,16 @@ func main() {
 
 	xmlMngr := xml.NewXMLManager(log)
 
+	tcClient := tcclient.NewTCClient(cfg.TC.TCURL, cfg.TC.User, cfg.TC.Password, log)
+	tcService := tc.NewTCService(tcClient, log, cfg.JT.JtStoragePath)
+
 	jt_manager := jtmng.New(
 		cfg.JT.VisualizerPath,
 		cfg.JT.JtStoragePath,
 		cfg.JT.XmlStoragePath,
 		storage,
 		xmlMngr,
+		tcService,
 		log,
 	)
 
@@ -51,6 +58,7 @@ func main() {
 	router.Get("/ping", ping.New(log))
 	router.Route("/v1", func(r chi.Router) {
 		r.Post("/jts/getPMIs", pmi_getter.New(log, jt_manager))
+		r.Post("/jts/loadJT", loadfile.New(log, jt_manager))
 		r.Get("/pmis", pmi_list_getter.New(log, jt_manager))
 		r.Get("/jts", jt_list_getter.New(log, jt_manager))
 	})

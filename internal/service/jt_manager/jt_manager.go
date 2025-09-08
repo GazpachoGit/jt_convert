@@ -23,6 +23,10 @@ type XMLManager interface {
 	ParsePMIsFromXML(xmlFileFullPath string) ([]model.PMI, error)
 }
 
+type TCService interface {
+	LoadFile(uid, typeName, name string) error
+}
+
 type JTManager struct {
 	visualizerPath string
 	xmlStoragePath string
@@ -30,9 +34,10 @@ type JTManager struct {
 	log            *slog.Logger
 	strg           Storage
 	x              XMLManager
+	tcService      TCService
 }
 
-func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, strg Storage, x XMLManager, log *slog.Logger) *JTManager {
+func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, strg Storage, x XMLManager, tc TCService, log *slog.Logger) *JTManager {
 	log.Debug("create JT manager instance",
 		slog.String("visualizerPath", visualizerPath),
 		slog.String("jtStoragePath", jtStoragePath),
@@ -45,7 +50,25 @@ func New(visualizerPath string, jtStoragePath string, xmlStoragePath string, str
 		log:            log,
 		strg:           strg,
 		x:              x,
+		tcService:      tc,
 	}
+}
+
+func (jt *JTManager) LoadFile(uid, typeName, name string) error {
+	const op = "service.jtconverter.LoadJTFileFromTCWithPMIs"
+	log := jt.log.With(slog.String("op", op), slog.String("jtFileName", uid))
+	//load file from TC using the ticket
+	err := jt.tcService.LoadFile(uid, typeName, name)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+	log.Debug("JT file saved")
+	//process PMIs
+	_, err = jt.GetPMIs(name)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+	return nil
 }
 
 func (jt *JTManager) GetPMIs(jtFileName string) (*model.Model, error) {

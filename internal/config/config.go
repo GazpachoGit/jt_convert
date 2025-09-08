@@ -12,6 +12,7 @@ import (
 type Config struct {
 	HTTPSever ServerConfig `yaml:"http_server"`
 	JT        JTConfig     `yaml:"jt"`
+	TC        TCConfig     `yaml:"tc"`
 }
 
 type JTConfig struct {
@@ -25,6 +26,12 @@ type ServerConfig struct {
 	Address     string        `yaml:"address" env-default:"localhost:9000"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"6s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
+}
+
+type TCConfig struct {
+	TCURL    string `yaml:"tc_url" env-default:"http://localhost:3000"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
 }
 
 func MustLoad() *Config {

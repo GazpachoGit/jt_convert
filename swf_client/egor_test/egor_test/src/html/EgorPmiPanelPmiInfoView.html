@@ -1,5 +1,6 @@
-<aw-panel-section caption='PMI Properties' visible-when="data.resp.length">
-    <aw-flex-row height="13f">
+<aw-panel-section caption='PMI Properties' >
+    <span visible-when="!data.resp.length">No data</span>
+    <aw-flex-row height="13f" visible-when="data.resp.length">
         <aw-flex-column width="12">
             <aw-scrollpanel>
                 <p aw-repeat="res : data.resp">

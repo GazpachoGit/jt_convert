@@ -3,6 +3,10 @@
         "egor_open_pmi_panel": {
             "iconId": "cmdAddDefect",
             "title": "Open PMI"
+        },
+        "egor_load_jt_file":{
+            "iconId": "cmdAddDefect",
+            "title": "Load"
         }
     },
     "commandHandlers": {
@@ -15,6 +19,14 @@
                 "condition": "conditions.true"
             },
             "action": "activateegor_open_pmi_panel"
+        },
+        "egor_load_jt_fileHandler":{
+            "id": "egor_load_jt_file",
+            "activeWhen": true,
+            "visibleWhen": {
+                "condition":"conditions.canLoadJT"
+            },
+            "action": "activateegor_load_jt_file"
         }
     },
     "commandPlacements": {
@@ -22,6 +34,11 @@
             "id": "egor_open_pmi_panel",
             "priority": 10,
             "uiAnchor": "aw_workarea_toolbar"
+        },
+        "egor_load_jt_filePlacement":{
+            "id": "egor_load_jt_file",
+            "priority": 10,
+            "uiAnchor": "egor_jt_anchor"
         }
     },
     "actions": {
@@ -36,10 +53,28 @@
                     "height": "FULL"
                 }
             }
+        },
+        "activateegor_load_jt_file":{
+            "actionType": "JSFunctionAsync",
+            "method": "loadJTWithPMIs",
+            "inputData": {
+                "selectionData":"{{commandContext.vmo}}"
+            },
+            "deps": "js/egorPmiPanelService"
+        },
+        "events": {
+                "success": [ {
+                    "name":"egorPmiPanelJTListRefresh"
+                },
+                {
+                    "name":"configurationUpdated_indicators"
+                }
+                ]
         }
     },
-    "conditions": {},
-    "onEvent": [],
-    "messages": {},
-    "i18n": {}
+    "conditions":{
+        "canLoadJT":{
+            "expression":"ctx.egorPmiCtx.loadedJTs.indexOf(commandContext.vmo.uid) === -1"
+        }
+    }
 }

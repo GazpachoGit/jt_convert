@@ -19,7 +19,8 @@
             "inputData": {
                 "selectionData": "{{fields.selectionData}}"
             },
-            "selectionModelMode": "single"
+            "selectionModelMode": "single",
+            "commandsAnchor": "egor_jt_anchor"
         }
     },
     "actions": {
@@ -50,9 +51,7 @@
         }
     },
     "lifecycleHooks": {
-        "onMount": {
-            "action": "loadJT"
-        },
+        "onMount": "loadJT",
         "onUpdate": [
             {
                 "action": "handleModelChange",
@@ -61,5 +60,11 @@
                 ]
             }
         ]
-    }
+    },
+    "onEvent":[
+        {
+            "eventId": "egorPmiPanelJTListRefresh",
+            "action": "loadJT"
+        }
+    ]
 }

@@ -1,0 +1,85 @@
+{
+    "$schema": "declarativeIndicatorsSchema-1.0.0.json",
+    "indicators": {
+        "Egor_pmi_JT_found": {
+            "tooltip": {
+                "showPropDisplayName": true,
+                "propNames": [
+                    "object_string"
+                ]
+            },
+            "type": {
+                "names": [
+                    "DirectModel"
+                ],
+                "prop": {
+                    "names": [
+                        "object_string"
+                    ],
+                    "condition": "ctx.egorPmiCtx.loadedJTs.indexOf(localContext.vmo.uid) > -1"
+                }
+            },
+            "iconId": "indicatorQualityGreenRating"
+        },
+        "Egor_pmi_JT_not_found": {
+            "tooltip": {
+                "showPropDisplayName": true,
+                "propNames": [
+                    "object_string"
+                ]
+            },
+            "type": {
+                "names": [
+                    "DirectModel"
+                ],
+                "prop": {
+                    "names": [
+                        "object_string"
+                    ],
+                    "condition": "ctx.egorPmiCtx.loadedJTs.indexOf(localContext.vmo.uid) === -1"
+                }
+            },
+            "iconId": "indicatorQualityRedRating"
+        },
+        "Egor_pmi_PMIs_found": {
+            "tooltip": {
+                "showPropDisplayName": true,
+                "propNames": [
+                    "object_string"
+                ]
+            },
+            "type": {
+                "names": [
+                    "DirectModel"
+                ],
+                "prop": {
+                    "names": [
+                        "object_string"
+                    ],
+                    "condition": "ctx.egorPmiCtx.loadedPMIs.indexOf(localContext.vmo.uid) > -1"
+                }
+            },
+            "iconId": "indicatorFlagGreen"
+        },
+        "Egor_pmi_PMIs_not_found": {
+            "tooltip": {
+                "showPropDisplayName": true,
+                "propNames": [
+                    "object_string"
+                ]
+            },
+            "type": {
+                "names": [
+                    "DirectModel"
+                ],
+                "prop": {
+                    "names": [
+                        "object_string"
+                    ],
+                    "condition": "ctx.egorPmiCtx.loadedPMIs.indexOf(localContext.vmo.uid) === -1"
+                }
+            },
+            "iconId": "indicatorFlagRed"
+        }
+    }
+}

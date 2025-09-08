@@ -2,8 +2,11 @@ package model
 
 import (
 	"encoding/xml"
-	"jt_converter/internal/lib/random"
+	"fmt"
+	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type PMI struct {
@@ -46,7 +49,7 @@ func NewModel(jtFileName string, pmis []PMI) *Model {
 }
 
 func (p *PMI) BuildAttributes() {
-	p.UID = random.NewRandomString(15)
+	p.UID = uuid.New().String()
 	p.Type = "xml_pmi"
 	if p.Props == nil {
 		p.Props = make(map[string]AWCProperty, 10)
@@ -57,6 +60,12 @@ func (p *PMI) BuildAttributes() {
 		Value:   p.Name,
 	}
 	for _, propInstance := range p.RawProps.PropertyList {
+		if propInstance.Key == "value" {
+			num, err := strconv.ParseFloat(propInstance.Value, 64)
+			if err == nil {
+				propInstance.Value = fmt.Sprintf("%.2f", num)
+			}
+		}
 		p.Props[propInstance.Key] = AWCProperty{
 			Type:         "STRING",
 			UiValue:      propInstance.Value,
