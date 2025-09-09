@@ -1,9 +1,9 @@
 <aw-command-panel caption="PMI">   
     <aw-panel-body visible-when="ctx.egorPmiCtx">
-        <aw-flex-row height="35f">
+        <aw-flex-row height="40f">
             <aw-flex-column width="4">
                 <aw-label prop="data.selectedModelName"></aw-label>
-                <aw-label prop="data.selectedPMIName"></aw-label>
+                <aw-label prop="data.selectedPMIName"></aw-label>                
                 <egor-pmi-panel-jt-list model-state="data.modelState"></egor-pmi-panel-jt-list>
             </aw-flex-column>
             <aw-flex-column width="8">
@@ -16,4 +16,7 @@
             </aw-flex-column>
         <aw-flex-row>
     </aw-panel-body>
+    <aw-panel-footer>
+        <aw-button action="insert" enable-when="data.selectedPMIName.uiValue">Insert</aw-button>
+    </aw-panel-footer>
 </aw-command-panel> 

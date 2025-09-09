@@ -5,7 +5,8 @@ import dms from 'soa/dataManagementService';
 import cdm from 'soa/kernel/clientDataModel';
 import fms from 'soa/fileManagementService';
 
-const RELATION_NAME = "Qam0QualityActionAttachment"
+//const RELATION_NAME = "Qam0QualityActionAttachment"
+const RELATION_NAME = "IMAN_specification"
 const GO_APP_URL = 'http://localhost:9000'
 
 export async function loadJTWithPMIs(dataset){
@@ -32,7 +33,14 @@ export async function loadJTWithPMIs(dataset){
 }
 
 export async function getJTList() {
-    const selection = appCtxService.ctx.xrtSummaryContextObject
+    console.log(appCtxService.ctx)
+    let selection = appCtxService.ctx.xrtSummaryContextObject
+    if (!selection){
+        selection = appCtxService.ctx.selected
+        if (selection.modelType.typeHierarchyArray.indexOf("Awb0Element") > -1){
+            selection = {uid: selection.props.awb0UnderlyingObject.dbValues[0]}
+        }
+    }
     const selectionExt = await getObjects([selection.uid], [RELATION_NAME])
     const secondObjUids = selectionExt[0].props[RELATION_NAME].dbValues
     const objs = await getObjects(secondObjUids)
@@ -76,7 +84,7 @@ export async function getPMIs(modelState) {
             searchResults: []
         }
         const uid = modelState.uid
-        if(appCtxService.ctx.egorPmiCtx.loadedJTs.indexOf(uid) === -1 || appCtxService.ctx.egorPmiCtx.loadedPMIs.indexOf(uid) === -1) {
+        if(appCtxService.ctx.egorPmiCtx.loadedJTs.indexOf(uid) === -1) {
             return {
             totalFound: 0,
             searchResults: []

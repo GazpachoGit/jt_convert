@@ -92,10 +92,19 @@ func (jt *JTManager) GetPMIs(jtFileName string) (*model.Model, error) {
 	if !slices.Contains(jtFilesList, jtFileName) {
 		return nil, fmt.Errorf("%s: %s", op, "Can't find the JT file in the JT directory")
 	}
-	//convert
-	err = jt.ConvertJTtoXML(jtFileName)
+	//check xml
+	xmlFilesList, err := jt.getXMLList()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	if !slices.Contains(xmlFilesList, jtFileName) {
+		//convert
+		err = jt.ConvertJTtoXML(jtFileName)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	} else {
+		log.Debug("XML file detected. Skip conversion from JT")
 	}
 	//parse pmis
 	model, err := jt.ParsePMIsFromXML(jtFileName)
@@ -107,7 +116,7 @@ func (jt *JTManager) GetPMIs(jtFileName string) (*model.Model, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-	log.Debug("Successfully procesed GetPMIs request!")
+	log.Debug("Successfully finished GetPMIs request!")
 	return model, nil
 }
 
@@ -129,6 +138,27 @@ func (jt *JTManager) GetJTList() ([]string, error) {
 		}
 	}
 	log.Info("found JT files: ", slog.Int("total", len(resp)))
+	return resp, nil
+}
+
+func (jt *JTManager) getXMLList() ([]string, error) {
+	const op = "service.jtconverter.getXMLList"
+	log := jt.log.With(slog.String("op", op))
+
+	log.Debug("searching XMLs in folder", slog.String("dir", jt.xmlStoragePath))
+	files, err := os.ReadDir(jt.xmlStoragePath)
+	if err != nil {
+		err = fmt.Errorf("%s: %w", "Error reading XML storage dir directory", err)
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	resp := make([]string, 0, 10)
+	for _, file := range files {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), XMLFormat) {
+			base := strings.TrimSuffix(file.Name(), XMLFormat)
+			resp = append(resp, base)
+		}
+	}
+	log.Info("found XML files: ", slog.Int("total", len(resp)))
 	return resp, nil
 }
 

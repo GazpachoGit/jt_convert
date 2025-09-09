@@ -1,0 +1,53 @@
+{
+    "schemaVersion": "1.0.0",
+    "data": {
+        "pmiName":{
+            "displayName": "name",
+            "type": "string",
+            "isEditable": "false",
+            "dbValue":"{{ctx.panelContext.attributes.pmiName}}",
+            "uiValue":"{{ctx.panelContext.attributes.pmiName}}"
+        },
+        "diameter":{
+            "displayName": "diameter",
+            "type": "string",
+            "dbValue":"{{ctx.panelContext.attributes.diameter}}"
+        },
+        "upper":{
+            "displayName": "upper",
+            "type": "string",
+            "dbValue":"{{ctx.panelContext.attributes.upper}}"
+        },
+        "lower":{
+            "displayName": "lower",
+            "type": "string",
+            "dbValue":"{{ctx.panelContext.attributes.lower}}"
+        }
+    },
+    "actions":{
+        "doTheJob":{
+            "actionType": "JSFunction",
+            "deps": "js/egor_test_service",
+            "method": "updatePMI",
+            "inputData": {
+                "editor":"{{ctx.panelContext.editor}}",
+                "elementName":"{{ctx.panelContext.elementName}}",
+                "attributes":{
+                    "diameter":"{{data.diameter.dbValue}}",
+                    "upper":"{{data.upper.dbValue}}",
+                    "lower":"{{data.lower.dbValue}}"
+                }
+            },
+            "events": {
+                "success": [
+                    {
+                        "name": "complete",
+                        "eventData": {
+                            "source": "toolAndInfoPanel"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

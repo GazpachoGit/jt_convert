@@ -49,6 +49,26 @@
             "actionType": "JSFunctionAsync",
             "method": "getPMIServiceState",
             "deps": "js/egorPmiPanelService"
+        },
+        "insert":{
+           "actionType": "JSFunctionAsync",
+            "method": "insertSelectedPMI",
+            "inputData": {
+                "editor":"{{ctx.panelContext.editor}}",
+                "elementName":"{{ctx.panelContext.elementName}}",
+                "selectedObjects": "{{data.pmiState}}"
+            },
+            "deps": "js/egor_test_service",
+            "events": {
+                "success": [
+                    {
+                        "name": "complete",
+                        "eventData": {
+                            "source": "toolAndInfoPanel"
+                        }
+                    }
+                ]
+            }
         }
     },
     "lifecycleHooks": {
