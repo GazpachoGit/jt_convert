@@ -9,5 +9,5 @@ jt:
   db_path: 'C:\pmi\db'
 tc:
   tc_url: "http://localhost:3000"
-  user: etorn186c
-  password: egor
+  user: XXX
+  password: YYY
